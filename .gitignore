@@ -1,0 +1,20 @@
+# Python Cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Lingkungan Virtual (Virtual Environment)
+venv/
+env/
+.env
+
+# Jupyter Notebook Checkpoints
+.ipynb_checkpoints/
+
+# Konfigurasi Streamlit Lokal
+.streamlit/
+
+# File Sistem Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
