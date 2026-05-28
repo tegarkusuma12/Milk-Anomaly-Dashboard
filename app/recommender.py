@@ -3,42 +3,49 @@
 def analyze_anomaly(row):
     """
     Fungsi ini menganalisis baris data sensor yang anomali
-    dan mengembalikan daftar masalah serta rekomendasi tema industri.
+    dan mengembalikan daftar masalah (Root Cause) serta rekomendasi tindakan teknis (SOP).
     """
     masalah = []
     rekomendasi = []
     
-    # 1. Parameter Kimia (pH)
+    # 1. Parameter Kimia (pH) - Normal susu sapi: 6.5 - 6.7
     if row['pH'] < 6.4: 
-        masalah.append("pH < 6.4: Asiditas tinggi (Risiko fermentasi bakteri)")
-        rekomendasi.append("Tema: Audit & Otomatisasi Sanitasi CIP (Cleaning in Place)")
+        masalah.append("pH Drop (< 6.4): Susu mulai asam. Indikasi fermentasi laktat akibat aktivitas bakteri tinggi.")
+        rekomendasi.append("Tindakan Cepat: Isolasi batch tangki ini. Lakukan uji mikrobiologi (Total Plate Count) segera.")
+        rekomendasi.append("Investigasi: Periksa apakah ada jeda waktu terlalu lama (bottleneck) sebelum pendinginan.")
     elif row['pH'] > 6.8: 
-        masalah.append("pH > 6.8: Basa tidak wajar (Cek residu bahan pembersih / Mastitis)")
-        rekomendasi.append("Tema: Sistem Deteksi Kontaminasi Kimia Berbasis IoT")
+        masalah.append("pH Basa (> 6.8): Ketidakwajaran kimiawi. Kemungkinan mastitis parah pada bahan baku atau kontaminasi kimia.")
+        rekomendasi.append("Tindakan Cepat: Tahan rilis produk (Hold Release). Ambil sampel untuk uji residu antibiotik dan kimia.")
+        rekomendasi.append("Investigasi: Audit log sistem pembersihan CIP (Cleaning-in-Place). Cek apakah pembilasan soda api kurang bersih.")
         
-    # 2. Parameter Termal (Suhu)
+    # 2. Parameter Termal (Suhu) 
     if row['Temprature'] >= 50: 
-        masalah.append("Suhu Kritis (>=50°C): Kegagalan total sistem pendingin tangki")
-        rekomendasi.append("Tema: Predictive Maintenance pada Heat Exchanger")
+        masalah.append(f"Suhu Ekstrem ({row['Temprature']}°C): Kegagalan fatal pada sistem pendingin (Chiller/Heat Exchanger).")
+        rekomendasi.append("Tindakan Cepat: Hentikan aliran pipa ke tangki utama (Emergency Stop). Aktifkan pendingin cadangan.")
+        rekomendasi.append("Investigasi: Tim Maintenance wajib memeriksa kebocoran freon atau kerusakan kompresor Chiller.")
     elif 40 <= row['Temprature'] < 50:
-        masalah.append("Suhu Warning (40-49°C): Fluktuasi termal terdeteksi")
-        rekomendasi.append("Tema: Optimasi Logistik Cold Chain & A/B Testing Sensor Suhu")
+        masalah.append(f"Suhu Warning ({row['Temprature']}°C): Anomali fluktuasi termal. Beban pendinginan tidak stabil.")
+        rekomendasi.append("Tindakan Cepat: Lakukan pengecekan fisik pada panel suhu mesin. Tambahkan durasi sirkulasi pendinginan.")
         
     # 3. Parameter Organoleptik & Fisik
     if row['Odor'] == 0: 
-        masalah.append("Uji Organoleptik Gagal: Terdeteksi bau menyimpang")
-        rekomendasi.append("Tema: Quality Control Otomatis & Standar Zero Defect")
+        masalah.append("Uji Sensorik: Terdeteksi bau menyimpang (Tengik / Asam / Busuk).")
+        rekomendasi.append("Tindakan Cepat: Buang (Reject) batch ini ke IPAL jika hasil lab mengonfirmasi pembusukan.")
         
     if row['Turbidity'] == 1: 
-        masalah.append("Fisik: Kekeruhan tinggi (Indikasi penggumpalan protein/filtrasi buruk)")
-        rekomendasi.append("Tema: Upgrade Sistem Ultra-Filtrasi (Lean Production)")
+        masalah.append("Uji Fisik: Kekeruhan abnormal. Indikasi awal penggumpalan protein (curdling) atau filtrasi kotor.")
+        rekomendasi.append("Investigasi: Cek dan bersihkan saringan utama (Filter Strainer). Periksa tekanan pompa dorong.")
 
-    # Fallback jika mesin mendeteksi anomali dari kombinasi fitur lain
+    # 4. Fallback (Anomali Multivariat dari Isolation Forest yang tidak tertangkap aturan tunggal di atas)
     if not masalah:
-        masalah.append("Kombinasi sensor multivariat tidak wajar terdeteksi oleh AI.")
-        rekomendasi.append("Tema: Investigasi Menyeluruh & Kalibrasi Ulang Sensor")
+        masalah.append("Sistem AI mendeteksi penyimpangan pola multivariat (kombinasi aneh antar sensor).")
+        rekomendasi.append("Tindakan Cepat: Ambil sampel manual untuk uji lab lengkap secara menyeluruh (Kimia & Fisik).")
+        rekomendasi.append("Investigasi: Minta teknisi instrumen melakukan kalibrasi ulang pada sensor IoT di lini produksi ini.")
 
-    # Menghapus duplikat tema jika ada
-    rekomendasi = list(set(rekomendasi))
+    # Menghapus duplikat rekomendasi jika ada (menjaga urutan tetap rapi)
+    rekomendasi_unik = []
+    for rec in rekomendasi:
+        if rec not in rekomendasi_unik:
+            rekomendasi_unik.append(rec)
     
-    return masalah, rekomendasi
+    return masalah, rekomendasi_unik
