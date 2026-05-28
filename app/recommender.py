@@ -36,7 +36,23 @@ def analyze_anomaly(row):
         masalah.append("Uji Fisik: Kekeruhan abnormal. Indikasi awal penggumpalan protein (curdling) atau filtrasi kotor.")
         rekomendasi.append("Investigasi: Cek dan bersihkan saringan utama (Filter Strainer). Periksa tekanan pompa dorong.")
 
-    # 4. Fallback (Anomali Multivariat dari Isolation Forest yang tidak tertangkap aturan tunggal di atas)
+    # 4. Parameter Organoleptik Lanjutan & Komposisi
+    if row['Taste'] == 0: 
+        masalah.append("Uji Rasa: Terdeteksi penyimpangan (Asam / Pahit / Hambar).")
+        rekomendasi.append("Tindakan Cepat: Lakukan uji organoleptik ulang oleh panelis bersertifikat. Blokir batch dari pengemasan.")
+        rekomendasi.append("Investigasi: Periksa potensi percampuran dengan air bilasan di dalam pipa distribusi.")
+        
+    if row['Fat '] == 0:
+        masalah.append("Komposisi: Kadar lemak terdeteksi rendah (Sub-standar / Skim).")
+        rekomendasi.append("Tindakan Cepat: Alihkan (divert) rute aliran susu ini ke tangki produksi Susu Rendah Lemak (Low-Fat/Skim).")
+        rekomendasi.append("Investigasi: Evaluasi kualitas bahan baku dari peternak (potensi pengenceran air).")
+
+    # 5. Parameter Visual (Warna)
+    if row['Colour'] < 255: 
+        masalah.append(f"Uji Visual: Warna tidak standar/kusam (Skala: {row['Colour']}). Indikasi kontaminasi fisik, air kotor, atau mastitis (darah).")
+        rekomendasi.append("Tindakan Cepat: Reject batch sepenuhnya. Lakukan sanitasi total (CIP) pada seluruh jalur pipa yang dilewati.")
+        
+    # 6. Fallback (Anomali Multivariat dari Isolation Forest yang tidak tertangkap aturan tunggal di atas)
     if not masalah:
         masalah.append("Sistem AI mendeteksi penyimpangan pola multivariat (kombinasi aneh antar sensor).")
         rekomendasi.append("Tindakan Cepat: Ambil sampel manual untuk uji lab lengkap secara menyeluruh (Kimia & Fisik).")
