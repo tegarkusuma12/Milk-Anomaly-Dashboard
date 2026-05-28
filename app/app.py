@@ -11,7 +11,7 @@ st.set_page_config(page_title="Dairy Intelligence Dashboard", layout="wide", pag
 
 # 1. Update Path File
 PATH_DATA = "data/milk_syntethic_timeseries.csv"
-PATH_MODEL = "model/iforest_model.pkl"
+PATH_MODEL = "model/iforest_model_grid.pkl"
 
 st.title("🥛 Industrial Dashboard: Real-Time Anomaly Detection")
 st.markdown("Dashboard ini memantau sensor operasional secara runtun waktu (*time-series*) dan memberikan rekomendasi mitigasi berbasis AI.")
