@@ -4,6 +4,7 @@ import streamlit as st
 import pandas as pd
 import joblib
 import os
+import numpy as np 
 from datetime import datetime
 from recommender import analyze_anomaly
 
@@ -13,8 +14,8 @@ st.set_page_config(page_title="Dairy Intelligence Dashboard", layout="wide", pag
 PATH_DATA = "data/milk_syntethic_timeseries.csv"
 PATH_MODEL = "model/iforest_model_grid.pkl"
 
-st.title("🥛 Industrial Dashboard: Real-Time Anomaly Detection")
-st.markdown("Dashboard ini memantau sensor operasional secara runtun waktu (*time-series*) dan memberikan rekomendasi mitigasi berbasis AI.")
+st.title("Dashboard Deteksi Anomaly Susu dan Rekomendasi Mitigasi🥛")
+st.markdown("Dashboard ini memantau sensor operasional secara runtun waktu (*time-series*) menggunakan kombinasi **Machine Learning** dan **SOP Sistem Pakar**.")
 
 @st.cache_data
 def load_data():
@@ -68,11 +69,30 @@ else:
     if df.empty:
         st.warning("⚠️ Tidak ada data pabrik pada rentang tanggal tersebut. Silakan atur ulang filter di sidebar.")
     else:
-        # AI melakukan Prediksi pada data yang sudah di-filter
+        # ==========================================
+        # MESIN ANALISIS HIBRIDA (AI + PAKAR)
+        # ==========================================
         fitur_sensor = ['pH', 'Temprature', 'Taste', 'Odor', 'Fat ', 'Turbidity', 'Colour']
+        
+        # FASE 1: AI melakukan Prediksi
         df['status_anomali'] = model.predict(df[fitur_sensor])
+        
+        # FASE 2: Sistem Pakar Mencegat Kerusakan Fatal
+        batas_kritis = (
+            (df['pH'] < 6.4) |          # Asam ekstrem 
+            (df['pH'] > 7.0) |          # Basa ekstrem 
+            (df['Temprature'] >= 50)    # Suhu ekstrem 
+        )
+        
+        # FASE 3: Eksekusi Override Hibrida
+        df['status_anomali'] = np.where(batas_kritis, -1, df['status_anomali'])
+        
+        # Mapping label untuk UI
         df['status_text'] = df['status_anomali'].map({1: 'Normal', -1: 'Anomali'})
         
+        # ==========================================
+        # METRIK & VISUALISASI
+        # ==========================================
         total_data = len(df)
         total_anomali = len(df[df['status_anomali'] == -1])
         persen_anomali = round((total_anomali / total_data) * 100, 2) if total_data > 0 else 0
@@ -98,14 +118,14 @@ else:
         st.divider()
 
         # --- PANEL REKOMENDASI KNOWLEDGE WORKER ---
-        st.markdown("### 🚨 Panel Rekomendasi Tindakan (Knowledge Base)")
+        st.markdown("### 🚨 Panel Rekomendasi Tindakan")
         df_anomali = df[df['status_anomali'] == -1].reset_index(drop=True)
         
         if not df_anomali.empty:
             pilihan_batch = st.selectbox(
                 "Pilih Histori Waktu Anomali untuk Dianalisis:", 
                 df_anomali.index, 
-                format_func=lambda x: f"Waktu Kejadian: {df_anomali.loc[x, 'Timestamp'].strftime('%d %b %Y, %H:%M')} (Suhu: {df_anomali.loc[x, 'Temprature']}°C)"
+                format_func=lambda x: f"Waktu Kejadian: {df_anomali.loc[x, 'Timestamp'].strftime('%d %b %Y, %H:%M')} (Suhu: {df_anomali.loc[x, 'Temprature']}°C, pH: {df_anomali.loc[x, 'pH']})"
             )
             
             baris_terpilih = df_anomali.loc[pilihan_batch]
@@ -118,12 +138,13 @@ else:
                     for m in masalah:
                         st.write(f"- {m}")
                 with col_solusi:
-                    st.success("**Rekomendasi Tema Industri (Solusi):**")
+                    st.success("**Rekomendasi Tindakan (Mitigasi):**")
                     for r in rekomendasi:
                         st.write(f"- **{r}**")
         else:
-            st.success("🎉 Luar biasa! Pada rentang waktu ini tidak ada anomali yang terdeteksi.")
+            st.success("Tidak ada anomali yang terdeteksi.")
 
         st.divider()
         st.markdown("### 📋 Log Sensor Raw Data")
-        st.dataframe(df[['Timestamp', 'pH', 'Temprature', 'Odor', 'Turbidity', 'status_text']], use_container_width=True)
+        # Menampilkan tabel lengkap agar teknisi bisa melihat data detailnya
+        st.dataframe(df[['Timestamp', 'pH', 'Temprature', 'Odor', 'Turbidity', 'Fat ', 'Colour', 'status_text']], use_container_width=True)
