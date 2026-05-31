@@ -5,6 +5,8 @@ import pandas as pd
 import joblib
 import os
 import numpy as np 
+from plotly.subplots import make_subplots
+import plotly.graph_objects as go
 from datetime import datetime
 from recommender import analyze_anomaly
 
@@ -14,7 +16,7 @@ st.set_page_config(page_title="Dairy Intelligence Dashboard", layout="wide", pag
 PATH_DATA = "data/milk_syntethic_timeseries.csv"
 PATH_MODEL = "model/iforest_model_grid.pkl"
 
-st.title("Dashboard Deteksi Anomaly Susu dan Rekomendasi Mitigasi🥛")
+st.title("Dashboard Deteksi Anomali Susu dan Rekomendasi Mitigasi🥛")
 st.markdown("Dashboard ini memantau sensor operasional secara runtun waktu (*time-series*) menggunakan kombinasi **Machine Learning** dan **SOP Sistem Pakar**.")
 
 @st.cache_data
@@ -100,20 +102,80 @@ else:
         # --- KPI METRICS ---
         st.markdown("### 📊 Key Performance Indicators (KPI)")
         col1, col2, col3 = st.columns(3)
-        col1.metric("Total Batch Tersaring", total_data)
-        col2.metric("Alarm Anomali (Terfilter)", total_anomali, delta=f"{persen_anomali}% Failure Rate", delta_color="inverse")
         
+        # Metrik 1: Total Produksi
+        col1.metric("Total Batch Diproses", total_data)
+        
+        # Metrik 2: Tingkat Keandalan (Dibalik dari Failure Rate menjadi Success Rate)
+        tingkat_keandalan = 100 - persen_anomali
+        col2.metric(
+            "Tingkat Keandalan Produksi", 
+            f"{tingkat_keandalan:.1f}%", 
+            delta=f" - {persen_anomali}% Anomali Ditemukan", 
+            delta_color="normal"
+        )
+        
+        # Metrik 3: Status Batch Terakhir dengan narasi yang lebih profesional
         data_terkini = df.iloc[-1]
-        status_sekarang = "🔴 BAHAYA" if data_terkini['status_anomali'] == -1 else "🟢 AMAN"
-        col3.metric("Status Pabrik (Akhir Periode)", status_sekarang)
-        
-        st.divider()
+        if data_terkini['status_anomali'] == -1:
+            status_sekarang = "🔍 Butuh Mitigasi"
+            warna_status = "normal"
+            delta_teks = " - Cek Panel Rekomendasi"
+        else:
+            status_sekarang = "✅ Lolos QC"
+            warna_status = "normal"
+            delta_teks = "Standar Terpenuhi"
+            
+        col3.metric("Status Batch Terkini", status_sekarang, delta=delta_teks, delta_color=warna_status)
 
-        # --- GRAFIK RUNTUN WAKTU ---
-        st.markdown("### 📈 Tren Suhu Operasional (Time-Series)")
-        df_chart = df.set_index('Timestamp')
-        st.line_chart(df_chart['Temprature'], height=300, color="#2ecc71")
-        st.caption("*Catatan Visual: Jika terjadi lonjakan drastis pada grafik di atas, sistem akan memicu kartu rekomendasi di bawah ini.*")
+        # --- GRAFIK RUNTUN WAKTU (SUHU & pH) ---
+        st.markdown("### 📈 Tren Sensor Operasional (Time-Series)")
+        
+        # Membuat kerangka grafik bertumpuk (2 baris, 1 kolom) dengan sumbu X (waktu) yang terhubung
+        fig = make_subplots(
+            rows=2, cols=1, 
+            shared_xaxes=True, 
+            vertical_spacing=0.1,
+            subplot_titles=("Sensor Suhu (°C)", "Sensor Keasaman (pH)")
+        )
+        
+        # 1. Memasukkan Garis Suhu (Row 1)
+        fig.add_trace(
+            go.Scatter(
+                x=df['Timestamp'], y=df['Temprature'], 
+                mode='lines', name='Suhu',
+                line=dict(color='#2ecc71', width=2),
+                hovertemplate="<b>Suhu:</b> %{y}°C<extra></extra>"
+            ), row=1, col=1
+        )
+        
+        # 2. Memasukkan Garis pH (Row 2)
+        fig.add_trace(
+            go.Scatter(
+                x=df['Timestamp'], y=df['pH'], 
+                mode='lines', name='pH',
+                line=dict(color='#3498db', width=2), # Warna biru untuk membedakan dari suhu
+                hovertemplate="<b>pH:</b> %{y}<extra></extra>"
+            ), row=2, col=1
+        )
+        
+        # 3. Menambahkan Garis Batas Kritis (Threshold) khusus untuk pH
+        fig.add_hline(y=7.0, line_dash="dot", line_color="#e74c3c", line_width=2, row=2, col=1, annotation_text="Batas Basa Kritis", annotation_position="top right")
+        fig.add_hline(y=6.4, line_dash="dot", line_color="#e74c3c", line_width=2, row=2, col=1, annotation_text="Batas Asam Kritis", annotation_position="bottom right")
+        
+        # Kustomisasi Layout Keseluruhan
+        fig.update_layout(
+            hovermode="x unified",
+            showlegend=False,
+            height=500, # Tinggikan kanvas karena ada dua grafik
+            margin=dict(l=0, r=0, t=30, b=0)
+        )
+        
+        # Kustomisasi Sumbu X agar memunculkan Jam dan Tanggal di bagian paling bawah
+        fig.update_xaxes(tickformat="%d %b\n%H:%M", row=2, col=1)
+        
+        st.plotly_chart(fig, use_container_width=True)
+        st.caption("*Garis putus-putus merah pada grafik pH menunjukkan batas kritis (SOP Pabrik). Jika garis biru menembus batas tersebut, sistem pakar akan otomatis memicu mitigasi.*")
         
         st.divider()
 
