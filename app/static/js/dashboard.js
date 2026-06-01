@@ -12,11 +12,17 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 // 1. Fetch Data Dashboard dari API Backend Flask
-function fetchDashboardData(startDate = '', endDate = '') {
+function fetchDashboardData(startDate = '', endDate = '', range = '') {
     let url = '/api/data';
+    const params = [];
     if (startDate && endDate) {
-        url += `?start_date=${startDate}&end_date=${endDate}`;
+        params.push(`start_date=${startDate}`);
+        params.push(`end_date=${endDate}`);
+    } else {
+        const activeRange = range || document.querySelector(".chart-tab-btn.active")?.dataset.range || '7d';
+        params.push(`range=${activeRange}`);
     }
+    url += '?' + params.join('&');
 
     // Set loading state untuk tabel
     document.getElementById("table_body").innerHTML = `
@@ -34,11 +40,14 @@ function fetchDashboardData(startDate = '', endDate = '') {
             // Simpan seluruh data log mentah
             currentDataLogs = data.logs;
             
-            // Set input filter tanggal default jika pertama kali dimuat
-            if (!startDate && !endDate && data.date_range) {
-                document.getElementById("start_date").value = data.date_range.min;
-                document.getElementById("end_date").value = data.date_range.max;
-                // Tetapkan batasan kalender min-max
+            // Set input filter tanggal sesuai range aktif dari server
+            if (data.active_range) {
+                document.getElementById("start_date").value = data.active_range.start;
+                document.getElementById("end_date").value = data.active_range.end;
+            }
+            
+            // Tetapkan batasan kalender min-max
+            if (data.date_range) {
                 document.getElementById("start_date").min = data.date_range.min;
                 document.getElementById("start_date").max = data.date_range.max;
                 document.getElementById("end_date").min = data.date_range.min;
@@ -392,7 +401,9 @@ function populateTable(logs) {
 
 // 7. Pengaturan Event Listener Interaksi UI
 function setupEventListeners() {
-    // A. Filter Rentang Tanggal
+    const tabButtons = document.querySelectorAll(".chart-tab-btn");
+
+    // A. Filter Rentang Tanggal (Sidebar)
     document.getElementById("btn_apply_filter").addEventListener("click", () => {
         const startDate = document.getElementById("start_date").value;
         const endDate = document.getElementById("end_date").value;
@@ -400,7 +411,24 @@ function setupEventListeners() {
             alert("Harap tentukan tanggal mulai dan tanggal selesai filter!");
             return;
         }
+        
+        // Nonaktifkan semua tab karena beralih ke filter tanggal kustom
+        tabButtons.forEach(b => b.classList.remove("active"));
+        
         fetchDashboardData(startDate, endDate);
+    });
+
+    // B. Filter Sumbu Waktu Tab (Grafik)
+    tabButtons.forEach(btn => {
+        btn.addEventListener("click", (e) => {
+            // Nonaktifkan semua tab
+            tabButtons.forEach(b => b.classList.remove("active"));
+            // Aktifkan tab yang diklik
+            e.target.classList.add("active");
+            
+            const range = e.target.dataset.range;
+            fetchDashboardData('', '', range);
+        });
     });
 
     // B. Dropdown Selector Anomali

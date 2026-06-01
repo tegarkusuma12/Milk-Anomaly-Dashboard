@@ -72,9 +72,10 @@ def get_data():
     # Urutan waktu
     df_processed = df_processed.sort_values('Timestamp', ascending=True)
     
-    # Ambil filter tanggal
+    # Ambil filter tanggal & range
     start_date_str = request.args.get('start_date')
     end_date_str = request.args.get('end_date')
+    time_range = request.args.get('range', '7d')
     
     min_date = df_processed['Timestamp'].min().date()
     max_date = df_processed['Timestamp'].max().date()
@@ -88,7 +89,20 @@ def get_data():
         except Exception:
             df_filtered = df_processed.copy()
     else:
-        df_filtered = df_processed.copy()
+        # Filter berdasarkan range relatif terhadap waktu kejadian TERAKHIR di dataset
+        latest_timestamp = df_processed['Timestamp'].max()
+        if time_range == '24h':
+            df_filtered = df_processed[df_processed['Timestamp'] >= latest_timestamp - pd.Timedelta(hours=24)].copy()
+        elif time_range == '7d':
+            df_filtered = df_processed[df_processed['Timestamp'] >= latest_timestamp - pd.Timedelta(days=7)].copy()
+        elif time_range == '30d':
+            df_filtered = df_processed[df_processed['Timestamp'] >= latest_timestamp - pd.Timedelta(days=30)].copy()
+        else: # 'all'
+            df_filtered = df_processed.copy()
+            
+    # Tentukan range tanggal yang saat ini aktif ditampilkan
+    active_start = df_filtered['Timestamp'].min().strftime('%Y-%m-%d') if not df_filtered.empty else min_date.strftime('%Y-%m-%d')
+    active_end = df_filtered['Timestamp'].max().strftime('%Y-%m-%d') if not df_filtered.empty else max_date.strftime('%Y-%m-%d')
         
     if df_filtered.empty:
         return jsonify({
@@ -180,6 +194,10 @@ def get_data():
         "date_range": {
             "min": min_date.strftime('%Y-%m-%d'),
             "max": max_date.strftime('%Y-%m-%d')
+        },
+        "active_range": {
+            "start": active_start,
+            "end": active_end
         }
     })
 

@@ -879,3 +879,37 @@ tr:hover td {
         grid-template-columns: 1fr;
     }
 }
+
+/* REVISI: Chart Tabs Styling (Capsule Group) */
+.chart-tabs {
+    display: flex;
+    background-color: rgba(0, 0, 0, 0.2);
+    border: 1px solid var(--border-color);
+    padding: 3px;
+    border-radius: 20px;
+    gap: 2px;
+}
+
+.chart-tab-btn {
+    background: transparent;
+    border: none;
+    padding: 5px 14px;
+    border-radius: 16px;
+    color: var(--text-secondary);
+    font-family: var(--font-primary);
+    font-size: 0.8rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: var(--transition-smooth);
+}
+
+.chart-tab-btn:hover {
+    color: #ffffff;
+}
+
+.chart-tab-btn.active {
+    background-color: var(--bg-secondary);
+    color: #60a5fa;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.04);
+}
