@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dairyboard - Dashboard QC Kualitas Susu Pabrik 🥛</title>
+    <!-- Google Fonts: Outfit -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Main Style Sheet -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="app-container">
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+            <div class="brand">
+                <span class="logo-emoji">🥛</span>
+                <h2>Dairyboard</h2>
+            </div>
+            <p class="brand-sub">Sistem AI + Pakar Deteksi Anomali</p>
+            
+            <div class="sidebar-divider"></div>
+
+            <!-- NAVIGATION -->
+            <nav class="sidebar-nav">
+                <a href="/" class="nav-item active">📊 Dashboard Utama</a>
+                <a href="/simulator" class="nav-item">🧪 Simulator Uji</a>
+            </nav>
+
+            <div class="sidebar-divider"></div>
+            
+            <!-- PANEL KONTROL -->
+            <section class="sidebar-section">
+                <h3>⚙️ Kontrol & Filter</h3>
+                <p class="section-desc">Saring data log operasional pabrik berdasarkan rentang waktu.</p>
+                <div class="filter-group">
+                    <label for="start_date">Mulai Tanggal</label>
+                    <input type="date" id="start_date">
+                </div>
+                <div class="filter-group">
+                    <label for="end_date">Sampai Tanggal</label>
+                    <input type="date" id="end_date">
+                </div>
+                <button id="btn_apply_filter" class="btn-primary">Terapkan Filter</button>
+            </section>
+        </aside>
+
+        <!-- MAIN PANEL -->
+        <main class="main-content">
+            <!-- HEADER / TITLE -->
+            <header class="main-header">
+                <div class="header-text">
+                    <h1>Dashboard Deteksi Anomali Susu & Rekomendasi Mitigasi 🥛</h1>
+                    <p>Memantau sensor operasional secara runtun waktu menggunakan kombinasi Model Machine Learning (Isolation Forest) dan SOP Sistem Pakar.</p>
+                </div>
+            </header>
+
+            <!-- KPI METRIC CARDS -->
+            <section class="kpi-grid">
+                <div class="kpi-card" id="kpi_total">
+                    <div class="kpi-icon bg-blue-trans">📊</div>
+                    <div class="kpi-info">
+                        <span class="kpi-title">Total Batch Diproses</span>
+                        <h2 class="kpi-value" id="kpi_val_total">-</h2>
+                        <span class="kpi-subtext" id="kpi_sub_total">Dalam rentang terpilih</span>
+                    </div>
+                </div>
+
+                <div class="kpi-card" id="kpi_reliability">
+                    <div class="kpi-icon bg-green-trans">🛡️</div>
+                    <div class="kpi-info">
+                        <span class="kpi-title">Tingkat Keandalan Produksi</span>
+                        <h2 class="kpi-value" id="kpi_val_reliability">-%</h2>
+                        <span class="kpi-subtext color-red" id="kpi_sub_reliability">- Anomali terdeteksi</span>
+                    </div>
+                </div>
+
+                <div class="kpi-card" id="kpi_status">
+                    <div class="kpi-icon bg-amber-trans">🚨</div>
+                    <div class="kpi-info">
+                        <span class="kpi-title">Status Batch Terkini</span>
+                        <h2 class="kpi-value" id="kpi_val_status">-</h2>
+                        <span class="kpi-subtext" id="kpi_sub_status">-</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- CHARTS SECTION -->
+            <section class="dashboard-section charts-section-card">
+                <div class="section-header">
+                    <h3>📈 Tren Sensor Operasional (Time-Series)</h3>
+                    <span class="badge">Interaktif</span>
+                </div>
+                <div class="charts-container">
+                    <div class="chart-wrapper">
+                        <canvas id="tempChart"></canvas>
+                    </div>
+                    <div class="chart-wrapper">
+                        <canvas id="phChart"></canvas>
+                    </div>
+                </div>
+                <p class="chart-caption">*Garis putus-putus merah pada grafik menunjukkan batas kritis (SOP Pabrik). Titik-titik merah pada garis menunjukkan waktu kejadian anomali.*</p>
+            </section>
+
+            <!-- RECOMMENDATIONS PANEL -->
+            <section class="dashboard-section recommendation-section-card">
+                <div class="section-header">
+                    <h3>🚨 Panel Rekomendasi Tindakan (SOP)</h3>
+                    <span class="badge badge-danger" id="anom_badge">0 Anomali</span>
+                </div>
+                
+                <div class="recom-container">
+                    <div class="selector-box">
+                        <label for="anomaly_selector">Pilih Histori Waktu Anomali untuk Dianalisis:</label>
+                        <select id="anomaly_selector" class="custom-select">
+                            <option value="">-- Memuat anomali... --</option>
+                        </select>
+                    </div>
+                    
+                    <div id="recom_display" class="recom-display-grid">
+                        <div class="recom-card root-cause-card">
+                            <div class="recom-card-header color-red-bg">
+                                <h4>🔍 Akar Masalah (Root Cause)</h4>
+                            </div>
+                            <div class="recom-card-body">
+                                <ul id="root_cause_list">
+                                    <li class="placeholder-text">Pilih batch anomali di atas untuk memunculkan analisis akar masalah.</li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <div class="recom-card mitigation-card">
+                            <div class="recom-card-header color-green-bg">
+                                <h4>✅ Rekomendasi Tindakan (Mitigasi)</h4>
+                            </div>
+                            <div class="recom-card-body">
+                                <ul id="mitigation_list">
+                                    <li class="placeholder-text">Pilih batch anomali di atas untuk memunculkan instruksi SOP.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- RAW DATA TABLE -->
+            <section class="dashboard-section table-section-card">
+                <div class="section-header">
+                    <h3>📋 Log Sensor Raw Data</h3>
+                    <div class="table-actions">
+                        <label for="row_limit_select" class="table-action-label">Tampilkan:</label>
+                        <select id="row_limit_select" class="limit-select">
+                            <option value="10" selected>10 baris</option>
+                            <option value="50">50 baris</option>
+                            <option value="100">100 baris</option>
+                            <option value="-1">Semua</option>
+                        </select>
+                        <button id="btn_export" class="btn-outline">📥 Ekspor CSV</button>
+                    </div>
+                </div>
+                <div class="table-container">
+                    <table id="raw_data_table">
+                        <thead>
+                            <tr>
+                                <th>Timestamp</th>
+                                <th>pH</th>
+                                <th>Suhu (°C)</th>
+                                <th>Bau</th>
+                                <th>Kekeruhan</th>
+                                <th>Lemak</th>
+                                <th>Rasa</th>
+                                <th>Warna</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="table_body">
+                            <tr>
+                                <td colspan="9" class="text-center placeholder-text">Memuat data log sensor...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- JS Files -->
+    <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+</body>
+</html>

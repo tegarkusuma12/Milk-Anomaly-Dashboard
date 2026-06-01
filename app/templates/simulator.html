@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LactoGuard - Simulator Uji Kualitas Susu 🥛</title>
+    <!-- Google Fonts: Outfit -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Main Style Sheet -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="app-container">
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+            <div class="brand">
+                <span class="logo-emoji">🥛</span>
+                <h2>LactoGuard</h2>
+            </div>
+            <p class="brand-sub">Sistem AI + Pakar Deteksi Anomali</p>
+            
+            <div class="sidebar-divider"></div>
+
+            <!-- NAVIGATION -->
+            <nav class="sidebar-nav">
+                <a href="/" class="nav-item">📊 Dashboard Utama</a>
+                <a href="/simulator" class="nav-item active">🧪 Simulator Uji</a>
+            </nav>
+
+            <div class="sidebar-divider"></div>
+
+            <section class="sidebar-section">
+                <h3>💡 Informasi Simulasi</h3>
+                <p class="section-desc">Halaman ini digunakan untuk mensimulasikan pembacaan sensor IoT secara manual tanpa memengaruhi database operasional pabrik.</p>
+                <p class="section-desc">Gunakan ini untuk memeriksa batch bahan baku susu sebelum dialirkan ke dalam tangki pencampuran utama.</p>
+            </section>
+        </aside>
+
+        <!-- MAIN PANEL -->
+        <main class="main-content">
+            <!-- HEADER / TITLE -->
+            <header class="main-header">
+                <div class="header-text">
+                    <h1>🧪 Simulator Uji Sensor Mandiri</h1>
+                    <p>Uji kualitas sampel susu secara instan menggunakan kombinasi Model Machine Learning (Isolation Forest) dan SOP Sistem Pakar.</p>
+                </div>
+            </header>
+
+            <!-- SIMULATOR CORE LAYOUT -->
+            <div class="simulator-page-grid">
+                <!-- LEFT CARD: PARAMETERS FORM -->
+                <section class="dashboard-section simulator-card">
+                    <div class="section-header">
+                        <h3>🔧 Parameter Sensor IoT</h3>
+                        <span class="badge bg-cyan-badge">Input Sensor</span>
+                    </div>
+                    
+                    <form id="page_simulator_form" class="simulator-page-form">
+                        <div class="slider-group-page">
+                            <div class="slider-header-page">
+                                <label for="sim_ph">Sensor pH (Keasaman)</label>
+                                <span id="val_ph" class="slider-val-page">6.60</span>
+                            </div>
+                            <input type="range" id="sim_ph" min="5.0" max="8.0" step="0.05" value="6.60">
+                            <span class="slider-hint">Normal: 6.50 - 6.70</span>
+                        </div>
+                        
+                        <div class="slider-group-page">
+                            <div class="slider-header-page">
+                                <label for="sim_temp">Sensor Suhu Tangki (°C)</label>
+                                <span id="val_temp" class="slider-val-page">37.0°C</span>
+                            </div>
+                            <input type="range" id="sim_temp" min="10" max="70" step="0.5" value="37.0">
+                            <span class="slider-hint">Normal: < 40.0°C | Batas Bahaya: >= 50.0°C</span>
+                        </div>
+
+                        <div class="grid-inputs-page">
+                            <div class="select-group-page">
+                                <label for="sim_taste">Rasa Susu</label>
+                                <select id="sim_taste">
+                                    <option value="1" selected>Normal / Manis Gurih</option>
+                                    <option value="0">Abnormal / Asam / Pahit</option>
+                                </select>
+                            </div>
+                            <div class="select-group-page">
+                                <label for="sim_odor">Bau / Aroma</label>
+                                <select id="sim_odor">
+                                    <option value="1" selected>Normal / Khas Susu</option>
+                                    <option value="0">Abnormal / Asam / Busuk</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="grid-inputs-page">
+                            <div class="select-group-page">
+                                <label for="sim_fat">Kandungan Lemak</label>
+                                <select id="sim_fat">
+                                    <option value="1" selected>Normal / Tinggi</option>
+                                    <option value="0">Abnormal / Rendah</option>
+                                </select>
+                            </div>
+                            <div class="select-group-page">
+                                <label for="sim_turbidity">Kekeruhan</label>
+                                <select id="sim_turbidity">
+                                    <option value="0" selected>Normal</option>
+                                    <option value="1">Abnormal (Menggumpal)</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="slider-group-page">
+                            <div class="slider-header-page">
+                                <label for="sim_colour">Skala Warna (Warna Susu)</label>
+                                <span id="val_colour" class="slider-val-page">255</span>
+                            </div>
+                            <input type="range" id="sim_colour" min="240" max="255" step="1" value="255">
+                            <span class="slider-hint">Normal: 255 (Putih Bersih)</span>
+                        </div>
+                        
+                        <button type="submit" id="btn_simulate" class="btn-secondary-page">Jalankan Analisis Kualitas</button>
+                    </form>
+                </section>
+
+                <!-- RIGHT CARD: LIVE RESULTS -->
+                <section class="dashboard-section simulator-result-card" id="results_container">
+                    <div class="section-header">
+                        <h3>📊 Hasil Analisis Uji Kualitas</h3>
+                        <span class="badge" id="status_pill_badge">Belum Diuji</span>
+                    </div>
+
+                    <div class="sim-page-placeholder" id="placeholder_result">
+                        <div class="placeholder-icon">🧪</div>
+                        <h4>Siap Melakukan Pengujian</h4>
+                        <p>Silakan sesuaikan parameter sensor di sebelah kiri, kemudian tekan tombol "Jalankan Analisis Kualitas" untuk melihat hasilnya secara detail.</p>
+                    </div>
+                    
+                    <div class="sim-page-results" id="actual_result" style="display: none;">
+                        <div class="result-box-page">
+                            <span id="sim_result_badge" class="result-badge-page">-</span>
+                        </div>
+                        
+                        <div id="sim_details_grid" class="recom-display-grid-page">
+                            <div class="recom-card root-cause-card">
+                                <div class="recom-card-header color-red-bg">
+                                    <h4>🔍 Akar Masalah (Root Cause)</h4>
+                                </div>
+                                <div class="recom-card-body">
+                                    <ul id="sim_root_cause_list"></ul>
+                                </div>
+                            </div>
+                            
+                            <div class="recom-card mitigation-card">
+                                <div class="recom-card-header color-green-bg">
+                                    <h4>✅ Rekomendasi SOP Mitigasi</h4>
+                                </div>
+                                <div class="recom-card-body">
+                                    <ul id="sim_mitigation_list"></ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <!-- JS Files -->
+    <script src="{{ url_for('static', filename='js/simulator.js') }}"></script>
+</body>
+</html>
