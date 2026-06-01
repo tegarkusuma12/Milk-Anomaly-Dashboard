@@ -1,9 +1,14 @@
 # File: app/app.py
 
+import os
+import sys
+
+# Tambahkan direktori 'app' ke path pencarian modul Python agar Vercel dapat mengimpor recommender.py
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+
 from flask import Flask, render_template, jsonify, request
 import pandas as pd
 import joblib
-import os
 import numpy as np
 from datetime import datetime
 from recommender import analyze_anomaly
