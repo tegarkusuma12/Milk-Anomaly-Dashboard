@@ -10,8 +10,10 @@ from recommender import analyze_anomaly
 
 app = Flask(__name__, template_folder='templates', static_folder='static')
 
-PATH_DATA = "data/milk_syntethic_timeseries.csv"
-PATH_MODEL = "model/iforest_model_grid.pkl"
+# Path File Absolut agar aman saat di-deploy ke Vercel (karena CWD serverless function bisa berbeda)
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+PATH_DATA = os.path.join(BASE_DIR, "data", "milk_syntethic_timeseries.csv")
+PATH_MODEL = os.path.join(BASE_DIR, "model", "iforest_model_grid.pkl")
 
 # Load model dan data secara global saat start-up
 def init_resources():
