@@ -81,7 +81,15 @@ function updateKPIs(kpis) {
     
     // Warnai subtext keandalan jika tingkat keandalannya di bawah 95%
     const subReliability = document.getElementById("kpi_sub_reliability");
-    subReliability.textContent = `${kpis.total_anomali} Anomali Ditemukan (${kpis.persen_anomali}%)`;
+    subReliability.textContent = `${kpis.total_anomali} Anomali Ditemukan -- ${kpis.persen_anomali}%`;
+    if (kpis.total_anomali > 0) {
+        subReliability.classList.add("highlight-danger");
+        subReliability.classList.remove("color-red");
+    } else {
+        subReliability.classList.remove("highlight-danger");
+        subReliability.classList.add("color-red");
+    }
+
     if (kpis.tingkat_keandalan < 95.0) {
         reliabilityVal.style.color = "var(--color-amber)";
     } else {
@@ -92,6 +100,13 @@ function updateKPIs(kpis) {
     const subStatus = document.getElementById("kpi_sub_status");
     valStatus.textContent = kpis.status_sekarang;
     subStatus.textContent = kpis.delta_teks;
+    
+    // Highlight "Cek Panel Rekomendasi" in yellow
+    if (kpis.delta_teks === "Cek Panel Rekomendasi") {
+        subStatus.classList.add("highlight-warning");
+    } else {
+        subStatus.classList.remove("highlight-warning");
+    }
     
     // Ganti background card status batch terkini berdasarkan kondisi
     const statusCard = document.getElementById("kpi_status");

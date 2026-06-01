@@ -283,12 +283,14 @@ body {
     backdrop-filter: var(--glass-blur);
     border: 1px solid var(--border-color);
     border-radius: 14px;
-    padding: 20px;
+    padding: 22px 20px;
     display: flex;
-    align-items: center;
-    gap: 16px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
     box-shadow: var(--shadow-premium);
     transition: var(--transition-smooth);
+    position: relative;
 }
 
 .kpi-card:hover {
@@ -297,13 +299,16 @@ body {
 }
 
 .kpi-icon {
-    width: 50px;
-    height: 50px;
-    border-radius: 12px;
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.5rem;
+    font-size: 1.3rem;
+    position: absolute;
+    top: 20px;
+    right: 20px;
 }
 
 .bg-blue-trans {
@@ -327,7 +332,8 @@ body {
 .kpi-info {
     display: flex;
     flex-direction: column;
-    gap: 2px;
+    gap: 6px;
+    width: 100%;
 }
 
 .kpi-title {
@@ -336,6 +342,8 @@ body {
     color: var(--text-secondary);
     text-transform: uppercase;
     letter-spacing: 0.5px;
+    padding-right: 54px; /* Mencegah tabrakan dengan icon di kanan atas */
+    line-height: 1.35;
 }
 
 .kpi-value {
@@ -356,6 +364,33 @@ body {
 
 .color-green {
     color: #6ee7b7 !important;
+}
+
+/* Alert Highlight Utilities */
+.highlight-danger {
+    background-color: #ef4444;  /* Solid warning red */
+    color: #ffffff !important;  /* High contrast white text */
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-weight: 550;
+    font-size: 0.74rem;
+    letter-spacing: -0.01em;
+    white-space: nowrap;
+    align-self: flex-start;
+    margin-top: 2px;
+}
+
+.highlight-warning {
+    background-color: #fbbf24;  /* Solid amber/yellow */
+    color: #1a1b1e !important;  /* High contrast dark charcoal text */
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-weight: 550;
+    font-size: 0.74rem;
+    letter-spacing: -0.01em;
+    white-space: nowrap;
+    align-self: flex-start;
+    margin-top: 2px;
 }
 
 /* SECTIONS (CARDS STYLE) */
