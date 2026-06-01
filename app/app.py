@@ -75,7 +75,7 @@ def get_data():
     # Ambil filter tanggal & range
     start_date_str = request.args.get('start_date')
     end_date_str = request.args.get('end_date')
-    time_range = request.args.get('range', '7d')
+    time_range = request.args.get('range', '24h')
     
     min_date = df_processed['Timestamp'].min().date()
     max_date = df_processed['Timestamp'].max().date()
@@ -132,7 +132,7 @@ def get_data():
     # Status Terkini (batch terakhir)
     data_terkini = df_filtered.iloc[-1]
     if data_terkini['status_anomali'] == -1:
-        status_sekarang = "🔍 Butuh Mitigasi"
+        status_sekarang = "Butuh Mitigasi"
         delta_teks = "Cek Panel Rekomendasi"
     else:
         status_sekarang = "✅ Lolos QC"

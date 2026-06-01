@@ -19,7 +19,7 @@ function fetchDashboardData(startDate = '', endDate = '', range = '') {
         params.push(`start_date=${startDate}`);
         params.push(`end_date=${endDate}`);
     } else {
-        const activeRange = range || document.querySelector(".chart-tab-btn.active")?.dataset.range || '7d';
+        const activeRange = range || document.querySelector(".chart-tab-btn.active")?.dataset.range || '24h';
         params.push(`range=${activeRange}`);
     }
     url += '?' + params.join('&');
@@ -131,8 +131,8 @@ function renderCharts(chartData) {
             legend: { display: false },
             tooltip: {
                 backgroundColor: 'rgba(26, 27, 30, 0.95)',
-                titleFont: { family: 'Outfit', size: 12 },
-                bodyFont: { family: 'Outfit', size: 12 },
+                titleFont: { family: 'Inter', size: 12 },
+                bodyFont: { family: 'Inter', size: 12 },
                 titleColor: '#ffffff',
                 bodyColor: '#e4e4e7',
                 borderColor: 'rgba(255,255,255,0.1)',
@@ -148,7 +148,7 @@ function renderCharts(chartData) {
                         }
                         const idx = context.dataIndex;
                         if (chartData[idx].status_anomali === -1) {
-                            label += ' 🔍 [ANOMALI]';
+                            label += ' [ANOMALI]';
                         }
                         return label;
                     }
@@ -160,7 +160,7 @@ function renderCharts(chartData) {
                 grid: { color: 'rgba(255, 255, 255, 0.08)' },
                 ticks: {
                     color: '#e4e4e7',
-                    font: { family: 'Outfit', size: 10 },
+                    font: { family: 'Inter', size: 10 },
                     maxTicksLimit: 12,
                     callback: function(val, index) {
                         const label = labels[index] || '';
@@ -175,7 +175,7 @@ function renderCharts(chartData) {
                 grid: { color: 'rgba(255, 255, 255, 0.08)' },
                 ticks: {
                     color: '#e4e4e7',
-                    font: { family: 'Outfit', size: 11 }
+                    font: { family: 'Inter', size: 11 }
                 }
             }
         }
@@ -199,7 +199,7 @@ function renderCharts(chartData) {
                 ctx.lineTo(right, y64);
                 ctx.stroke();
                 ctx.fillStyle = '#fca5a5';
-                ctx.font = '10px Outfit';
+                ctx.font = '10px Inter';
                 ctx.fillText('Batas Asam Kritis (6.4)', right - 130, y64 - 5);
             }
 
@@ -211,7 +211,7 @@ function renderCharts(chartData) {
                 ctx.lineTo(right, y70);
                 ctx.stroke();
                 ctx.fillStyle = '#fca5a5';
-                ctx.font = '10px Outfit';
+                ctx.font = '10px Inter';
                 ctx.fillText('Batas Basa Kritis (7.0)', right - 130, y70 - 5);
             }
             ctx.restore();
@@ -236,7 +236,7 @@ function renderCharts(chartData) {
                 ctx.lineTo(right, y50);
                 ctx.stroke();
                 ctx.fillStyle = '#fca5a5';
-                ctx.font = '10px Outfit';
+                ctx.font = '10px Inter';
                 ctx.fillText('Batas Suhu Ekstrem (50.0°C)', right - 160, y50 - 5);
             }
             ctx.restore();

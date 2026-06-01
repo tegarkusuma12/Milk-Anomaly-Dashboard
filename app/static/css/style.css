@@ -23,7 +23,7 @@
     --color-amber: #fbbf24;     /* Amber */
     --color-amber-soft: rgba(251, 191, 36, 0.15);
     
-    --font-primary: 'Outfit', sans-serif;
+    --font-primary: 'Inter', sans-serif;
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     --shadow-premium: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
     --glass-blur: blur(12px);
@@ -97,12 +97,12 @@ body {
 
 /* Warna Logo Gradien Sesuai Keinginan User */
 .brand h2 {
-    font-weight: 800;
+    font-weight: 600;
     font-size: 1.5rem;
     background: linear-gradient(135deg, #60a5fa, #34d399);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    letter-spacing: -0.5px;
+    letter-spacing: -0.02em;
 }
 
 /* Subtitle Lebih Terbaca */
@@ -148,7 +148,7 @@ body {
 .nav-item.active {
     background-color: rgba(96, 165, 250, 0.15);
     color: #60a5fa;
-    font-weight: 700;
+    font-weight: 600;
     border-left: 3px solid var(--color-blue);
     border-radius: 0 8px 8px 0;
     padding-left: 11px;
@@ -160,7 +160,7 @@ body {
 
 .sidebar-section h3 {
     font-size: 0.95rem;
-    font-weight: 800;
+    font-weight: 600;
     margin-bottom: 8px;
     color: #ffffff; /* Putih solid untuk judul sidebar */
     letter-spacing: 0.3px;
@@ -183,7 +183,7 @@ body {
 
 .filter-group label {
     font-size: 0.75rem;
-    font-weight: 700;
+    font-weight: 600;
     color: var(--text-secondary);
     text-transform: uppercase;
     letter-spacing: 0.5px;
@@ -215,7 +215,7 @@ body {
     padding: 10px;
     border-radius: 8px;
     font-family: var(--font-primary);
-    font-weight: 700;
+    font-weight: 600;
     font-size: 0.88rem;
     cursor: pointer;
     transition: var(--transition-smooth);
@@ -258,9 +258,9 @@ body {
 
 .main-header h1 {
     font-size: 1.7rem;
-    font-weight: 800;
+    font-weight: 600;
     color: #ffffff;
-    letter-spacing: -0.5px;
+    letter-spacing: -0.02em;
     margin-bottom: 6px;
 }
 
@@ -332,7 +332,7 @@ body {
 
 .kpi-title {
     font-size: 0.78rem;
-    font-weight: 700;
+    font-weight: 500;
     color: var(--text-secondary);
     text-transform: uppercase;
     letter-spacing: 0.5px;
@@ -340,7 +340,7 @@ body {
 
 .kpi-value {
     font-size: 1.6rem;
-    font-weight: 800;
+    font-weight: 600;
     color: #ffffff;
     letter-spacing: -0.3px;
 }
@@ -377,7 +377,7 @@ body {
 
 .section-header h3 {
     font-size: 1.2rem;
-    font-weight: 800;
+    font-weight: 600;
     color: #ffffff;
     letter-spacing: -0.3px;
 }
@@ -386,7 +386,7 @@ body {
     background-color: #4b5563;
     color: #ffffff;
     font-size: 0.72rem;
-    font-weight: 700;
+    font-weight: 500;
     padding: 3px 8px;
     border-radius: 12px;
 }
@@ -484,7 +484,7 @@ body {
 
 .recom-card-header h4 {
     font-size: 0.92rem;
-    font-weight: 800;
+    font-weight: 600;
     letter-spacing: 0.3px;
 }
 
@@ -592,7 +592,7 @@ table {
 th {
     background-color: var(--bg-secondary);
     color: #ffffff; /* Kontras header tabel 100% putih */
-    font-weight: 700;
+    font-weight: 600;
     text-transform: uppercase;
     font-size: 0.74rem;
     letter-spacing: 0.5px;
@@ -632,7 +632,7 @@ tr:hover td {
     padding: 2px 7px;
     border-radius: 10px;
     font-size: 0.7rem;
-    font-weight: 700;
+    font-weight: 500;
     display: inline-block;
     text-align: center;
 }
@@ -681,13 +681,13 @@ tr:hover td {
     display: flex;
     justify-content: space-between;
     font-size: 0.86rem;
-    font-weight: 700;
+    font-weight: 600;
     color: #ffffff;
 }
 
 .slider-val-page {
     color: var(--color-cyan);
-    font-weight: 800;
+    font-weight: 600;
 }
 
 .slider-hint {
@@ -710,7 +710,7 @@ tr:hover td {
 
 .select-group-page label {
     font-size: 0.8rem;
-    font-weight: 700;
+    font-weight: 600;
     color: var(--text-secondary);
 }
 
@@ -739,7 +739,7 @@ tr:hover td {
     padding: 12px;
     border-radius: 8px;
     font-family: var(--font-primary);
-    font-weight: 700;
+    font-weight: 600;
     font-size: 0.9rem;
     cursor: pointer;
     transition: var(--transition-smooth);
@@ -780,7 +780,7 @@ tr:hover td {
 
 .sim-page-placeholder h4 {
     font-size: 1.15rem;
-    font-weight: 800;
+    font-weight: 600;
     color: #ffffff;
     margin-bottom: 6px;
 }
@@ -809,7 +809,7 @@ tr:hover td {
 
 .result-badge-page {
     font-size: 1.25rem;
-    font-weight: 800;
+    font-weight: 600;
     padding: 6px 20px;
     border-radius: 20px;
     display: inline-block;
@@ -898,7 +898,7 @@ tr:hover td {
     color: var(--text-secondary);
     font-family: var(--font-primary);
     font-size: 0.8rem;
-    font-weight: 700;
+    font-weight: 500;
     cursor: pointer;
     transition: var(--transition-smooth);
 }
