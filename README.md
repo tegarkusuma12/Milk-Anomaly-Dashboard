@@ -48,35 +48,3 @@ Aplikasi ini telah dimigrasi dari Streamlit menjadi aplikasi berbasis **Flask We
 * **Backend / Analisis**: Python 3.9+, Flask, Pandas, Scikit-Learn, Joblib.
 * **Frontend**: HTML5, Vanilla CSS3 (Custom Dark Gray), Vanilla JavaScript (ES6+), Chart.js (Visualisasi).
 * **Serverless Deployment**: Dikonfigurasi untuk dideploy ke **Vercel** (`vercel.json`).
-
----
-
-## 📦 Panduan Instalasi Lokal
-
-1. **Clone repositori projek**:
-   ```bash
-   git clone https://github.com/tegarkusuma12/Milk-Anomaly-Dashboard.git
-   cd Milk-Anomaly-Dashboard
-   ```
-
-2. **Buat dan aktifkan virtual environment (Python)**:
-   ```bash
-   # Windows
-   python -m venv venv
-   venv\Scripts\activate
-
-   # macOS / Linux
-   python3 -m venv venv
-   source venv/bin/activate
-   ```
-
-3. **Install dependensi library**:
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-4. **Jalankan server Flask**:
-   ```bash
-   python app/app.py
-   ```
-   Aplikasi akan berjalan secara lokal di alamat: **[http://127.0.0.1:5000](http://127.0.0.1:5000)**.
