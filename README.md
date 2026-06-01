@@ -9,7 +9,8 @@ Aplikasi ini telah dimigrasi dari Streamlit menjadi aplikasi berbasis **Flask We
 ## 🛠️ Metodologi Pengembangan & Alur Kerja Sistem
 
 ### 1. Rekayasa Data Runtun Waktu (*Data Synthesis dari Milk.csv*)
-* **Berdasarkan Distribusi Statistik**: Data historis dibangkitkan secara sintetis dengan merujuk pada profil distribusi statistik riil (Nilai Tengah/Mean, Simpangan Baku/Standard Deviation, dan Probabilitas Rasio) pada kondisi operasional susu normal.
+* **Sumber Data Referensi**: Profil awal data referensi diambil dari dataset kualitas susu publik di Kaggle: [Milk Quality Prediction Dataset](https://www.kaggle.com/datasets/cpluzshrijayan/milkquality/data).
+* **Berdasarkan Distribusi Statistik**: Data historis dibangkitkan secara sintetis dengan merujuk pada profil distribusi statistik riil (Nilai Tengah/Mean, Simpangan Baku/Standard Deviation, dan Probabilitas Rasio) dari data referensi tersebut khusus pada kondisi operasional susu normal.
 * **Struktur Dataset**: Menghasilkan dataset berformat deret waktu (*time-series*) yang dilengkapi kolom `Timestamp` beserta sensor IoT pendukung: `pH`, `Temprature` (Suhu), `Taste`, `Odor`, `Fat`, `Turbidity`, dan `Colour`.
 * **Penyuntikan Skenario Anomali**: Untuk menguji keandalan deteksi sistem, beberapa titik data anomali ekstrem dan kombinasi aneh (multivariat) disuntikkan secara sengaja ke dalam database simulasi operasional.
 
